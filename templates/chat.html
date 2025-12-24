@@ -3,7 +3,6 @@
 <head>
     <title>Medical Chatbot</title>
 
-    <!-- Meta (important for premium UI) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,7 +17,7 @@
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <!-- Custom CSS -->
+    <!-- Custom CSS (UNCHANGED) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -34,7 +33,6 @@
                     <div class="d-flex align-items-center">
                         <div class="img_cont position-relative">
                             <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png"
-                                 alt="Medical Assistant"
                                  class="rounded-circle user_img">
                             <span class="online_icon"></span>
                         </div>
@@ -61,8 +59,7 @@
                         <div class="input-group-append">
                             <button type="submit"
                                     id="send"
-                                    class="input-group-text send_btn"
-                                    aria-label="Send message">
+                                    class="input-group-text send_btn">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </div>
@@ -74,14 +71,70 @@
     </div>
 </div>
 
+<!-- =========================
+     JAVASCRIPT
+========================= -->
 <script>
 $(document).ready(function () {
+
+    /* ---------- Sounds ---------- */
+    const sendSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
+    const replySound = new Audio("https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3");
+    sendSound.volume = 0.4;
+    replySound.volume = 0.4;
+
+    function playSendSound() {
+        sendSound.currentTime = 0;
+        sendSound.play().catch(()=>{});
+    }
+
+    function playReplySound() {
+        replySound.currentTime = 0;
+        replySound.play().catch(()=>{});
+    }
+
+    /* ---------- Fix Missing Gaps ---------- */
+    function fixTextSpacing(text) {
+        return text
+            .replace(/([.,!?])/g, "$1 ")
+            .replace(/([a-z])([A-Z])/g, "$1 $2")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    /* ---------- Thinking Indicator ---------- */
+    function showThinking() {
+        const thinkingHtml =
+            '<div id="ai-thinking" class="d-flex justify-content-start mb-4">' +
+                '<div class="img_cont_msg">' +
+                    '<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg">' +
+                '</div>' +
+                '<div class="msg_cotainer"><em>Just a moment…</em></div>' +
+            '</div>';
+        $("#messageFormeight").append(thinkingHtml);
+    }
+
+    function removeThinking() {
+        $("#ai-thinking").remove();
+    }
+
+    /* ---------- Markdown Formatter ---------- */
+    function formatBotResponse(text) {
+        if (!text) return "";
+        text = text.trim();
+        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+        text = text.replace(/\n\s*\n+/g, "\n");
+        text = text.replace(/\n/g, "<br>");
+        return text;
+    }
+
+    /* ---------- Chat Submit ---------- */
     $("#messageArea").on("submit", function (event) {
         event.preventDefault();
 
         const time = new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
+            hour: "2-digit",
+            minute: "2-digit"
         });
 
         const rawText = $("#text").val();
@@ -100,6 +153,8 @@ $(document).ready(function () {
 
         $("#text").val("");
         $("#messageFormeight").append(userHtml);
+        playSendSound();
+        showThinking();
 
         $.ajax({
             type: "POST",
@@ -107,13 +162,19 @@ $(document).ready(function () {
             data: { msg: rawText }
         }).done(function (data) {
 
+            removeThinking();
+            playReplySound();
+
+            let formattedData = formatBotResponse(data);
+            formattedData = fixTextSpacing(formattedData);
+
             const botHtml =
                 '<div class="d-flex justify-content-start mb-4">' +
                     '<div class="img_cont_msg">' +
                         '<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg">' +
                     '</div>' +
                     '<div class="msg_cotainer">' +
-                        data +
+                        formattedData +
                         '<span class="msg_time">' + time + '</span>' +
                     '</div>' +
                 '</div>';

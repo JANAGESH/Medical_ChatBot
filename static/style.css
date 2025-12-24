@@ -261,3 +261,136 @@ body::after {
         height: 100%;
     }
 }
+
+/* Bold emphasis inside bot messages */
+.msg_cotainer strong {
+    font-weight: 600;
+    color: #000000;
+}
+
+/* =========================
+   CARD FLOAT + BREATHING GLOW
+========================= */
+.card {
+    animation:
+        fadeUp 0.6s ease-out,
+        cardFloat 10s ease-in-out infinite,
+        cardGlow 6s ease-in-out infinite;
+}
+
+@keyframes cardFloat {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes cardGlow {
+    0%, 100% {
+        box-shadow:
+            0 30px 60px rgba(0,0,0,0.45),
+            inset 0 0 0.5px rgba(255,255,255,0.15),
+            0 0 0 rgba(90,200,250,0);
+    }
+    50% {
+        box-shadow:
+            0 35px 70px rgba(0,0,0,0.55),
+            inset 0 0 1px rgba(255,255,255,0.25),
+            0 0 18px rgba(90,200,250,0.18);
+    }
+}
+
+
+/* =========================
+   MESSAGE MICRO INTERACTION
+========================= */
+.msg_cotainer,
+.msg_cotainer_send {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.msg_cotainer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+.msg_cotainer_send:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+/* =========================
+   INPUT FOCUS PULSE
+========================= */
+.type_msg:focus {
+    animation: inputPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes inputPulse {
+    0% {
+        box-shadow: 0 0 6px rgba(82,172,255,0.35);
+    }
+    50% {
+        box-shadow: 0 0 12px rgba(82,172,255,0.65);
+    }
+    100% {
+        box-shadow: 0 0 6px rgba(82,172,255,0.35);
+    }
+}
+
+/* =========================
+   SEND BUTTON RIPPLE
+========================= */
+.send_btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 0 14px rgba(82,172,255,0.6);
+}
+
+
+/* =========================
+   FILM GRAIN / NOISE OVERLAY
+========================= */
+body::after {
+    background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+/* =========================
+   AVATAR HOVER GLOW
+========================= */
+.user_img,
+.user_img_msg {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.user_img:hover,
+.user_img_msg:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 16px rgba(90,200,250,0.6);
+}
+
+/* =========================
+   TYPING SOUND VISUAL SYNC
+========================= */
+.typing-sound-active {
+    filter: brightness(1.05);
+}
+
+/* =========================
+   STREAMING TEXT REVEAL
+========================= */
+.stream-text span {
+    opacity: 0;
+    display: inline-block;
+    transform: translateY(6px);
+    animation: wordReveal 0.35s ease forwards;
+}
+
+@keyframes wordReveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
