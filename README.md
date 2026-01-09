@@ -103,7 +103,7 @@ http://localhost:8080
 
 ## ☁️ AWS Deployment with CI/CD (GitHub Actions)
 
-### Step 1: Create IAM User
+### Step 1: Create an IAM User
 
 Create an IAM user with **programmatic access** and attach the following policies:
 
