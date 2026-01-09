@@ -117,7 +117,7 @@ Create an IAM user with **programmatic access** and attach the following policie
 Example repository URI:
 
 ```
-315865595366.dkr.ecr.us-east-1.amazonaws.com/medicalbot
+961190089513.dkr.ecr.ap-southeast-2.amazonaws.com/medicalbot
 ```
 
 Save this URI for later use.
