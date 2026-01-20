@@ -17,8 +17,8 @@
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <!-- Custom CSS (UNCHANGED) -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Custom CSS (STATIC FILE) -->
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="medical-ui">
@@ -51,14 +51,12 @@
                     <form id="messageArea" class="input-group">
                         <input type="text"
                                id="text"
-                               name="msg"
                                class="form-control type_msg"
                                placeholder="Ask a medical question..."
                                autocomplete="off"
                                required>
                         <div class="input-group-append">
                             <button type="submit"
-                                    id="send"
                                     class="input-group-text send_btn">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
@@ -77,109 +75,58 @@
 <script>
 $(document).ready(function () {
 
-    /* ---------- Sounds ---------- */
-    const sendSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
-    const replySound = new Audio("https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3");
-    sendSound.volume = 0.4;
-    replySound.volume = 0.4;
-
-    function playSendSound() {
-        sendSound.currentTime = 0;
-        sendSound.play().catch(()=>{});
-    }
-
-    function playReplySound() {
-        replySound.currentTime = 0;
-        replySound.play().catch(()=>{});
-    }
-
-    /* ---------- Fix Missing Gaps ---------- */
-    function fixTextSpacing(text) {
-        return text
-            .replace(/([.,!?])/g, "$1 ")
-            .replace(/([a-z])([A-Z])/g, "$1 $2")
-            .replace(/\s+/g, " ")
-            .trim();
-    }
-
-    /* ---------- Thinking Indicator ---------- */
     function showThinking() {
-        const thinkingHtml =
+        $("#messageFormeight").append(
             '<div id="ai-thinking" class="d-flex justify-content-start mb-4">' +
-                '<div class="img_cont_msg">' +
-                    '<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg">' +
-                '</div>' +
-                '<div class="msg_cotainer"><em>Just a moment…</em></div>' +
-            '</div>';
-        $("#messageFormeight").append(thinkingHtml);
+                '<div class="msg_cotainer"><em>Thinking…</em></div>' +
+            '</div>'
+        );
     }
 
     function removeThinking() {
         $("#ai-thinking").remove();
     }
 
-    /* ---------- Markdown Formatter ---------- */
     function formatBotResponse(text) {
         if (!text) return "";
-        text = text.trim();
-        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-        text = text.replace(/\n\s*\n+/g, "\n");
-        text = text.replace(/\n/g, "<br>");
-        return text;
+        return text.replace(/\n/g, "<br>");
     }
 
-    /* ---------- Chat Submit ---------- */
     $("#messageArea").on("submit", function (event) {
         event.preventDefault();
 
-        const time = new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-
-        const rawText = $("#text").val();
-        if (!rawText.trim()) return;
-
-        const userHtml =
-            '<div class="d-flex justify-content-end mb-4">' +
-                '<div class="msg_cotainer_send">' +
-                    rawText +
-                    '<span class="msg_time_send">' + time + '</span>' +
-                '</div>' +
-                '<div class="img_cont_msg">' +
-                    '<img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="rounded-circle user_img_msg">' +
-                '</div>' +
-            '</div>';
+        const rawText = $("#text").val().trim();
+        if (!rawText) return;
 
         $("#text").val("");
-        $("#messageFormeight").append(userHtml);
-        playSendSound();
+
+        $("#messageFormeight").append(
+            '<div class="d-flex justify-content-end mb-4">' +
+                '<div class="msg_cotainer_send">' + rawText + '</div>' +
+            '</div>'
+        );
+
         showThinking();
 
         $.ajax({
             type: "POST",
-            url: "/get",
-            data: { msg: rawText }
+            url: "/api/chat",
+            contentType: "application/json",
+            data: JSON.stringify({
+                query: rawText
+            })
         }).done(function (data) {
 
             removeThinking();
-            playReplySound();
 
-            let formattedData = formatBotResponse(data);
-            formattedData = fixTextSpacing(formattedData);
-
-            const botHtml =
+            $("#messageFormeight").append(
                 '<div class="d-flex justify-content-start mb-4">' +
-                    '<div class="img_cont_msg">' +
-                        '<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg">' +
-                    '</div>' +
                     '<div class="msg_cotainer">' +
-                        formattedData +
-                        '<span class="msg_time">' + time + '</span>' +
+                        formatBotResponse(data.answer) +
                     '</div>' +
-                '</div>';
+                '</div>'
+            );
 
-            $("#messageFormeight").append(botHtml);
             $("#messageFormeight").scrollTop(
                 $("#messageFormeight")[0].scrollHeight
             );
