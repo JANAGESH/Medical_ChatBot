@@ -1,0 +1,25 @@
+# Version control
+.git
+.github
+.gitignore
+
+# Python virtual environment & cache
+**/venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Node.js packages and build outputs
+**/node_modules/
+**/dist/
+**/build/
+.npm
+.eslintcache
+
+# Local database and state (mounted via volume)
+**/*.db
+**/*.db-journal
+
+# Environment secrets
+.env

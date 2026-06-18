@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Empathetic Healthcare Dark Gradient Background */
+  .bg-cyber-mesh {
+    background: 
+      radial-gradient(circle at 12% 18%, rgba(0, 242, 254, 0.045), transparent 45%),
+      radial-gradient(circle at 88% 82%, rgba(9, 132, 227, 0.045), transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(108, 92, 231, 0.02), transparent 50%),
+      linear-gradient(135deg, #02070f 0%, #03111f 50%, #01060a 100%);
+    background-size: 200% 200%;
+    animation: gradientFlow 24s ease infinite;
+  }
+
+  /* Calming Grid overlay */
+  .bg-grid-overlay {
+    position: relative;
+  }
+  
+  .bg-grid-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+    background-size: 70px 70px;
+    mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 80%);
+    opacity: 0.55;
+  }
+
+  /* Soft Empathetic Glassmorphism Panels */
+  .glass-panel {
+    background: rgba(4, 20, 36, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 
+      0 10px 40px -10px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0px 0px rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-panel-cyan {
+    background: rgba(4, 20, 36, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 242, 254, 0.12);
+    box-shadow: 
+      0 12px 40px -10px rgba(0, 242, 254, 0.04),
+      inset 0 1px 1px 0px rgba(255, 255, 255, 0.1);
+  }
+
+  /* Professional Medical Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
+    transition: background 0.3s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 242, 254, 0.25);
+  }
+}
+
+/* Animations */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Apple-style Gentle Floating */
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Pulse Heartbeat Ring Glow */
+.pulse-glow-cyan {
+  animation: pulseGlowCyan 4s ease-in-out infinite;
+}
+
+@keyframes pulseGlowCyan {
+  0%, 100% {
+    box-shadow: 
+      0 0 5px rgba(0, 242, 254, 0.15),
+      inset 0 0 1px rgba(0, 242, 254, 0.05);
+  }
+  50% {
+    box-shadow: 
+      0 0 25px rgba(0, 242, 254, 0.4),
+      inset 0 0 4px rgba(0, 242, 254, 0.2);
+  }
+}
+
+/* ECG Heartbeat Stroke Animation */
+.animate-heartbeat-stroke {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: heartbeatStroke 6s linear infinite;
+}
+
+@keyframes heartbeatStroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Soft Fade-in reveal */
+.animate-fade-in {
+  animation: fadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Word Reveal tokens spacing */
+.stream-text span {
+  opacity: 0;
+  display: inline-block;
+  transform: translateY(2px);
+  animation: wordReveal 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes wordReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

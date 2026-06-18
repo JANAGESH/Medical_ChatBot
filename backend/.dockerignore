@@ -1,0 +1,10 @@
+# Python virtual environment & cache
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local database and state
+*.db
+*.db-journal
