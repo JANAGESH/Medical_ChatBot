@@ -53,6 +53,47 @@ sequenceDiagram
 
 ---
 
+## 🚀 Core Platform Features & Implementation Details
+
+I built this platform to show how we can merge modern conversational AI with robust, secure healthcare state management. Here is a detailed breakdown of how each core feature is implemented:
+
+### 1. Clinical Vital Metrics Onboarding & Profiling
+* **Frontend Wizard**: Inside [OnboardingModal.jsx](file:///d:/Medical_ChatBot/frontend/src/components/OnboardingModal.jsx), I built a premium, glassmorphic multi-step wizard using Outfit typography. It captures the patient's name, Date of Birth, gender, height, and weight with animated slider bars and interactive selection tags.
+* **Onboarding Gate / Router**: Updated [App.jsx](file:///d:/Medical_ChatBot/frontend/src/App.jsx) to intercept navigation. If an authenticated user attempts to access the main consultation workspace but has not filled out their medical profile, the application automatically redirects them to complete the onboarding steps first.
+* **Backend Database Migrations**: Upon completing onboarding, a `PUT` request is made to `/api/auth/profile`. In the backend, the database lifespan event manager in [main.py](file:///d:/Medical_ChatBot/backend/app/main.py) dynamically inspects the database at startup and runs automatic migrations to add these vital columns (`dob`, `gender`, `height`, `weight`) to the users table without risking data loss.
+* **Age Calculation Service**: The backend calculates the patient's age on-the-fly from their Date of Birth string using Python's `datetime` utilities, ensuring it is always up-to-date.
+
+### 2. Context-Aware Conversational RAG & Memory
+* **Query Ingestion**: When the user sends a query (e.g., *“What are symptoms of iron deficiency?”*), it is received at `/api/chat/query`.
+* **Profile & History Injections**: The backend retrieves the user's vitals (age, height, weight, gender) and recent consultation logs from the database. It then formats and injects this information directly into the LLM system prompt as context.
+* **Vector Semantic Retrieval**: The query is vectorized into a 384-dimensional dense embedding using HuggingFace's CPU-optimized `all-MiniLM-L6-v2` transformer model. It then performs a cosine similarity lookup against our Pinecone vector index.
+* **Similarity Thresholding & Fallback**: To ensure absolute clinical safety, retrieved context segments are pruned if their similarity score falls below `0.65`.
+  * *If matches are found*: The relevant medical text is formatted as ground-truth context.
+  * *If no matches are found*: The system gracefully falls back to a clean Llama 3.1 consult, utilizing its clinical intelligence to respond naturally.
+* **Citations & Message Logging**: The generated response is returned alongside structured citations (source document and page numbers). The entire exchange is immediately logged in the `chat_messages` table under the active `session_id`.
+
+### 3. Browser-Native Voice AI (STT & TTS)
+* **Speech-to-Text (STT)**: Built into [ChatArea.jsx](file:///d:/Medical_ChatBot/frontend/src/components/ChatArea.jsx) using the browser's native Web Speech API (`webkitSpeechRecognition`). A microphone toggle on the chat bar lets patients dictate queries aloud, with an animated CSS keyframe waveform highlighting active listening states.
+* **Text-to-Speech (TTS)**: Built a synthesizer trigger next to every bot reply. Clicking it invokes the browser's `speechSynthesis` API with a warm, calm clinical tone configuration, providing accessibility for visually-impaired or elderly patients.
+
+### 4. Interactive Wellness Widgets (Right Sidebar)
+* **Hydration Tracker**: Implemented a stateful glass water meter that increments in steps of `250 ml` up to a target of `2000 ml`, storing progress locally.
+* **Sleep Advisor**: Dynamically calculates and displays the healthy sleep hours guideline based on the patient's calculated age.
+* **Glowing Symptom Risk Guidance**: A real-time script scans the consultation conversation keywords for flags (e.g., *“chest pain”*, *“breathless”*). It dynamically updates the alert badge status from *Low Concern* to *Monitor Symptoms*, *Moderate Concern*, or *Seek Medical Attention*, using a red/orange glowing pulse.
+* **Symptom Tracker Tags**: Automatically extracts and displays keywords of current symptoms discussed during the session in the right sidebar.
+
+### 5. Lab Report PDF Ingestion & Summarization
+* **File Upload Portal**: Patients can drag and drop clinical PDF reports into the chat area. The UI displays a simulated uploading state (0% to 100%) to indicate parsing progress.
+* **Server-Side Extraction**: The PDF is processed as a multipart file upload at `/api/chat/upload` and parsed using Python's `pypdf` library.
+* **Groq Llama Summarizer**: The raw text is passed to the Llama model with instructions to extract vital parameters, highlight out-of-range values with safety warnings, and output a concise, bulleted clinical summary.
+
+### 6. Dynamic Session Title Auto-Generation
+* **Background Summarization**: When a patient initiates a new session and sends their first message, the backend fires a concurrent call to Groq Llama to generate a concise, 3-to-4 word summary title (e.g. *“Iron Deficiency Guidance”*).
+* **Sidebar Update**: The backend updates the session title in the database and returns it, allowing the frontend sidebar to update the list of sessions instantly.
+
+
+---
+
 ## 📂 Project Directory Structure
 
 Below is the current layout of the repository, separating legacy prototype files from active production services:
@@ -165,6 +206,12 @@ The following key engineering and design choices were implemented to optimize th
 *   **Engineering Choice**: Configure Nginx with `resolver [fd12::10] ipv6=on valid=1s;` and route to a variable `$backend_service` pointing to `medicalchatbot.railway.internal`.
 *   **Rationale**: By default, Nginx tries to resolve all `proxy_pass` addresses at startup. If the backend container is offline or rebuilding during Nginx's boot, Nginx throws a fatal `host not found in upstream` error and crashes. Using a variable forces Nginx to defer DNS resolution until runtime.
 *   **Trade-off**: Requires minor resolver config updates, but prevents boot order dependency crashes between frontend and backend services during deployment.
+
+### 4. Disabled Unused AWS GitHub Actions Pipeline
+*   **Engineering Choice**: Renamed the `.github/workflows` directory to `.github/workflows_disabled/`.
+*   **Rationale**: The repository contains a legacy CI/CD action configured to build Docker images and push them to Amazon ECR, then deploy them on a self-hosted EC2 runner. Without AWS secrets configured in the repository, this workflow fails on every push. Disabling it by renaming the folder stops failing GitHub checks and keeps the commit status green and professional, while preserving the configuration for future reference.
+*   **Trade-off**: The pipeline will not trigger automatically on commits, but since deployments are managed automatically via Railway's native GitHub connection, this has zero impact on the production application.
+
 
 ---
 
