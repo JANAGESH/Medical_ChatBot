@@ -91,12 +91,16 @@ def run_rag_query(message: str, history_records: List, user_profile: dict = None
     5. Feeds isolated session memory and relevant context into the LLM context.
     6. Returns a tuple of (reply_text, list_of_sources) for structured database persistence.
     """
-    docsearch = get_docsearch()
     chat_model = get_chat_model()
+    docs_with_scores = []
 
     # 1. Query vector database for matching documents along with similarity scores (k=5)
-    # Cosine similarity metric: 0.0 (unrelated) to 1.0 (identical)
-    docs_with_scores = docsearch.similarity_search_with_score(message, k=5)
+    try:
+        docsearch = get_docsearch()
+        # Cosine similarity metric: 0.0 (unrelated) to 1.0 (identical)
+        docs_with_scores = docsearch.similarity_search_with_score(message, k=5)
+    except Exception as e:
+        print(f"Warning: RAG vector search connection failed ({e}). Falling back to general LLM query.")
 
     # 2. Relevance threshold filtering (prune noise)
     # Sweet spot for 'all-MiniLM-L6-v2' similarity scoring:
