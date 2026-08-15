@@ -73,7 +73,10 @@ async def lifespan(app: FastAPI):
         if 'weight' not in columns:
             with engine.begin() as conn:
                 conn.execute(text("ALTER TABLE users ADD COLUMN weight FLOAT"))
-            print("Successfully migrated users table to include profile columns.")
+        if 'nationality' not in columns:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE users ADD COLUMN nationality VARCHAR(100)"))
+            print("Successfully migrated users table to include profile and nationality columns.")
         
         # Add sources column dynamically to chat_messages table if missing
         msg_columns = [c['name'] for c in inspector.get_columns('chat_messages')]
@@ -166,6 +169,7 @@ def update_profile(
     current_user.gender = profile_data.gender
     current_user.height = profile_data.height
     current_user.weight = profile_data.weight
+    current_user.nationality = profile_data.nationality
     db.commit()
     db.refresh(current_user)
     return current_user
@@ -306,7 +310,8 @@ def query_chatbot(
             "dob": current_user.dob,
             "gender": current_user.gender,
             "height": current_user.height,
-            "weight": current_user.weight
+            "weight": current_user.weight,
+            "nationality": current_user.nationality
         }
         reply, sources = run_rag_query(query_input.message, history_records, user_profile)
         

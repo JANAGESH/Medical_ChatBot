@@ -18,6 +18,7 @@ class UserBase(BaseModel):
     gender: Optional[str] = None
     height: Optional[float] = None
     weight: Optional[float] = None
+    nationality: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6, description="Password must be at least 6 characters")
@@ -45,6 +46,7 @@ class UserProfileUpdate(BaseModel):
     gender: str = Field(..., description="Male, Female, or Other")
     height: float = Field(..., gt=30, lt=300, description="Height in cm")
     weight: float = Field(..., gt=5, lt=500, description="Weight in kg")
+    nationality: str = Field(..., min_length=1, max_length=100, description="Nationality of the user")
 
 # Token Schemas
 class Token(BaseModel):

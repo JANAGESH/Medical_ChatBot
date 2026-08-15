@@ -170,6 +170,7 @@ def run_rag_query(message: str, history_records: List, user_profile: dict = None
         gender = user_profile.get("gender") or "Not specified"
         height = user_profile.get("height") or "Not specified"
         weight = user_profile.get("weight") or "Not specified"
+        nationality = user_profile.get("nationality") or "Not specified"
         
         profile_str = (
             f"--- CLINICAL PATIENT PROFILE METRICS ---\n"
@@ -178,7 +179,8 @@ def run_rag_query(message: str, history_records: List, user_profile: dict = None
             f"Gender: {gender}\n"
             f"Height: {height} cm\n"
             f"Weight: {weight} kg\n"
-            f"PERSONALIZATION SCOPE: Intelligently adapt your response based on these metrics. For older users, provide slightly more cautious and gentler lifestyle recommendations. Customize sleep, hydration, stress, and exercise recovery tips specifically for their body build (height/weight/gender) safely and naturally.\n\n"
+            f"Nationality/Country: {nationality}\n"
+            f"PERSONALIZATION SCOPE: Intelligently adapt your response based on these metrics. For older users, provide slightly more cautious and gentler lifestyle recommendations. Customize sleep, hydration, stress, and exercise recovery tips specifically for their body build (height/weight/gender) safely and naturally. If suggesting emergency services, clinical help numbers, or telephone lines, personalize them to the patient's specified nationality/country location (e.g. 102/108/112 for India, 911 for USA, 999 for UK).\n\n"
         )
 
     memory_instruction = ""

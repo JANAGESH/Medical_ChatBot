@@ -22,6 +22,7 @@ class User(Base):
     gender = Column(String(20), nullable=True)     # Male / Female / Other
     height = Column(Float, nullable=True)          # in cm
     weight = Column(Float, nullable=True)          # in kg
+    nationality = Column(String(100), nullable=True) # Country/Nationality
     hashed_password = Column(String(128), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

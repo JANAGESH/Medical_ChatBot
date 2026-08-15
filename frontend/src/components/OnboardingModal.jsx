@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HeartPulse, ChevronRight, ArrowLeft, User, Calendar, Activity, ShieldCheck } from 'lucide-react';
+import { HeartPulse, ChevronRight, ArrowLeft, User, Calendar, Activity, ShieldCheck, Globe } from 'lucide-react';
 import api from '../utils/api';
 
 const OnboardingModal = ({ user, onComplete }) => {
@@ -9,6 +9,7 @@ const OnboardingModal = ({ user, onComplete }) => {
   const [gender, setGender] = useState('Male');
   const [height, setHeight] = useState(170); // in cm
   const [weight, setWeight] = useState(70);  // in kg
+  const [nationality, setNationality] = useState(user?.nationality || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [calculatedAge, setCalculatedAge] = useState(null);
@@ -46,6 +47,10 @@ const OnboardingModal = ({ user, onComplete }) => {
       setError('Please provide a valid date of birth.');
       return;
     }
+    if (!nationality.trim()) {
+      setError('Please specify your nationality.');
+      return;
+    }
     setError('');
     setStep(2);
   };
@@ -62,7 +67,8 @@ const OnboardingModal = ({ user, onComplete }) => {
         dob,
         gender,
         height: parseFloat(height),
-        weight: parseFloat(weight)
+        weight: parseFloat(weight),
+        nationality: nationality.trim()
       });
 
       // Pass updated user back to App.jsx to persist
@@ -183,6 +189,24 @@ const OnboardingModal = ({ user, onComplete }) => {
                       {g}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Nationality */}
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Nationality</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Globe className="h-4.5 w-4.5 text-slate-500 group-focus-within:text-medical-cyan transition duration-200" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Indian, American, British"
+                    value={nationality}
+                    onChange={(e) => setNationality(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/5 focus:border-medical-cyan/40 text-slate-200 rounded-xl outline-none placeholder:text-slate-600 focus:shadow-3d-cyan focus:bg-white/10 transition duration-300 text-xs"
+                  />
                 </div>
               </div>
             </div>
