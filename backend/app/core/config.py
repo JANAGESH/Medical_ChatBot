@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     # RAG Settings
     PINECONE_INDEX: str = "medical-chatbot"
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+    LLM_MODEL: str = "openai/gpt-oss-20b"
     
     # Read dotenv from either the current directory or the root directory
     model_config = SettingsConfigDict(

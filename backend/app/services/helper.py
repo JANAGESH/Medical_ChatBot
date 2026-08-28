@@ -75,7 +75,7 @@ def get_chat_model():
 
     # Initialize Groq LLM
     _chat_model = ChatGroq(
-        model_name="llama-3.1-8b-instant",
+        model_name=settings.LLM_MODEL,
         temperature=0
     )
     return _chat_model
