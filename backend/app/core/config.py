@@ -8,8 +8,8 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    PINECONE_API_KEY: str
-    GROQ_API_KEY: str
+    PINECONE_API_KEY: str = ""
+    GROQ_API_KEY: str = ""
     
     # Auth configuration
     JWT_SECRET_KEY: str = "supersecret_medical_jwt_key_change_in_production"
