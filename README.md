@@ -223,5 +223,4 @@ The following items are identified for future scalability and engineering refine
     *   *Recommendation*: Refactor routes into separate modules (e.g. `backend/app/api/v1/endpoints/auth.py` and `chat.py`) to allow isolated scalability.
 2.  **Structured Migrations Manager**: DB schemas are currently checked and altered using raw SQL strings inside the startup lifespan handler.
     *   *Recommendation*: Adopt **Alembic** for structured, versioned database migrations.
-3.  **Configurable AI Models**: AI model identifiers (`llama-3.1-8b-instant`) are hardcoded in python services files.
-    *   *Recommendation*: Expose these models as configuration variables inside `config.py` using `settings.LLM_MODEL`.
+3.  **Configurable AI Models**: Decoupled AI model identifiers into `config.py` using `settings.LLM_MODEL` with dynamic Groq model configuration.
